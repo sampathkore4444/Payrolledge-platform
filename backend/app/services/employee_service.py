@@ -8,12 +8,13 @@ from app.schemas.user import (
     DesignationCreate, DesignationUpdate,
     UserCreate, UserUpdate
 )
-from app.core.security import get_password_hash
+from app.core.security import get_password_hash, verify_password, create_access_token
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, timedelta
 import random
 import string
 import json
+from app.core.config import settings
 
 
 class EmployeeService:
@@ -43,6 +44,45 @@ class EmployeeService:
             existing = self.db.query(Employee).filter(Employee.employee_code == code).first()
             if not existing:
                 return code
+
+    def employee_login(self, employee_code: str, password: str) -> Optional[dict]:
+        """Login using employee code and password (creates user if doesn't exist)"""
+        employee = self.db.query(Employee).filter(Employee.employee_code == employee_code).first()
+        
+        if not employee:
+            return None
+        
+        user = self.db.query(User).filter(User.employee_id == employee.id).first()
+        
+        if not user:
+            return None
+        
+        if not verify_password(password, user.hashed_password):
+            return None
+        
+        if not user.is_active:
+            return None
+        
+        access_token = create_access_token(
+            data={"sub": str(user.id)},
+            expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        )
+        
+        return {
+            "access_token": access_token,
+            "token_type": "bearer",
+            "employee": {
+                "id": employee.id,
+                "employee_code": employee.employee_code,
+                "first_name": employee.first_name,
+                "last_name": employee.last_name,
+                "email": employee.email,
+                "phone": employee.phone,
+                "department": employee.department.name if employee.department else None,
+                "designation": employee.designation.name if employee.designation else None,
+                "date_of_joining": employee.date_of_joining
+            }
+        }
 
     def create_employee(self, employee_data: EmployeeCreate, user_id: int = None) -> Employee:
         employee_code = self._generate_employee_code()

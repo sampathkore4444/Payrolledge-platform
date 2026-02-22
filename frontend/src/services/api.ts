@@ -30,7 +30,10 @@ export const getErrorMessage = (error: any): string => {
 };
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  // Check for employee token first, then admin token
+  const employeeToken = localStorage.getItem('employee_token');
+  const adminToken = localStorage.getItem('token');
+  const token = employeeToken || adminToken;
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -41,8 +44,15 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+      // Only redirect to login if it's the admin token, not employee token
+      if (localStorage.getItem('token')) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+      } else if (localStorage.getItem('employee_token')) {
+        localStorage.removeItem('employee_token');
+        localStorage.removeItem('employee_data');
+        window.location.href = '/employee-portal';
+      }
     }
     return Promise.reject(error);
   }
@@ -56,12 +66,15 @@ export const authApi = {
   me: () => api.get('/auth/me'),
   changePassword: (data: { old_password: string; new_password: string }) =>
     api.post('/auth/change-password', data),
+  employeeLogin: (data: { employee_code: string; password: string }) =>
+    api.post('/auth/employee-login', data),
 };
 
 export const employeeApi = {
   list: (params?: { page?: number; page_size?: number; search?: string; department_id?: number }) =>
     api.get('/employees/', { params }),
   get: (id: number) => api.get(`/employees/${id}`),
+  me: () => api.get('/employees/me'),
   create: (data: any) => api.post('/employees/', data),
   update: (id: number, data: any) => api.put(`/employees/${id}`, data),
   delete: (id: number) => api.delete(`/employees/${id}`),

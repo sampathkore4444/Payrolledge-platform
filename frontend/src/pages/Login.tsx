@@ -284,6 +284,15 @@ export default function Login() {
                   Don't have an account? Register
                 </button>
               </div>
+
+              <div className="text-center mt-4 pt-4 border-t">
+                <a
+                  href="/employee-portal"
+                  className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                >
+                  Employee Portal - View Payslips & Apply for Leave
+                </a>
+              </div>
             </form>
           )}
         </div>

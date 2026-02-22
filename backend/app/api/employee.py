@@ -68,6 +68,34 @@ def list_employees(
     }
 
 
+@router.get("/me")
+def get_current_employee(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """Get current logged in employee's data"""
+    if not current_user.employee_id:
+        raise HTTPException(status_code=404, detail="No employee linked to this account")
+    
+    service = EmployeeService(db)
+    employee = service.get_employee(current_user.employee_id)
+    
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    
+    return {
+        "id": employee.id,
+        "employee_code": employee.employee_code,
+        "first_name": employee.first_name,
+        "last_name": employee.last_name,
+        "email": employee.email,
+        "phone": employee.phone,
+        "department": employee.department.name if employee.department else None,
+        "designation": employee.designation.name if employee.designation else None,
+        "date_of_joining": employee.date_of_joining
+    }
+
+
 @router.get("/{employee_id}", response_model=EmployeeResponse)
 def get_employee(
     employee_id: int,

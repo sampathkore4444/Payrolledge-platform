@@ -6,6 +6,7 @@ from app.api.leave import router as leave_router
 from app.api.payroll import router as payroll_router
 from app.api.document import router as document_router, onboarding_router, holidays_router, audit_router
 from app.api.reports import router as reports_router
+from app.api.integration import router as integration_router
 
 __all__ = [
     "auth_router",
@@ -21,5 +22,6 @@ __all__ = [
     "onboarding_router",
     "holidays_router",
     "audit_router",
-    "reports_router"
+    "reports_router",
+    "integration_router"
 ]

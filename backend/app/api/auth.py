@@ -2,9 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.security import get_current_active_user
-from app.schemas.auth import Token, LoginRequest, RegisterRequest
+from app.schemas.auth import Token, LoginRequest, RegisterRequest, EmployeeLoginRequest
 from app.schemas.user import UserResponse, ChangePassword
 from app.services.auth_service import AuthService
+from app.services.employee_service import EmployeeService
 from app.models.user import User
 import logging
 
@@ -69,3 +70,22 @@ def change_password(
         return {"message": "Password changed successfully"}
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@router.post("/employee-login")
+def employee_login(login_data: EmployeeLoginRequest, db: Session = Depends(get_db)):
+    """Login using employee code and password"""
+    service = EmployeeService(db)
+    try:
+        result = service.employee_login(login_data.employee_code, login_data.password)
+        if not result:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid employee code or password"
+            )
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Employee login error: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))

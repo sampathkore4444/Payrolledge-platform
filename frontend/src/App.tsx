@@ -16,6 +16,7 @@ import Reports from './pages/Reports';
 import Holidays from './pages/Holidays';
 import AuditLogs from './pages/AuditLogs';
 import Documents from './pages/Documents';
+import EmployeePortal from './pages/EmployeePortal';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
@@ -28,6 +29,7 @@ function App() {
       <Toaster position="top-right" />
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/employee-portal" element={<EmployeePortal />} />
         <Route
           path="/"
           element={

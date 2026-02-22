@@ -24,5 +24,10 @@ class RegisterRequest(BaseModel):
     full_name: Optional[str] = None
 
 
+class EmployeeLoginRequest(BaseModel):
+    employee_code: str
+    password: str
+
+
 class PasswordResetRequest(BaseModel):
     email: EmailStr

@@ -20,6 +20,7 @@ from app.api import (
     holidays_router,
     audit_router,
     reports_router,
+    integration_router,
 )
 
 
@@ -58,6 +59,7 @@ app.include_router(onboarding_router, prefix=settings.API_V1_STR)
 app.include_router(holidays_router, prefix=settings.API_V1_STR)
 app.include_router(audit_router, prefix=settings.API_V1_STR)
 app.include_router(reports_router, prefix=settings.API_V1_STR)
+app.include_router(integration_router, prefix=settings.API_V1_STR)
 
 
 @app.get("/", tags=["Health"])
