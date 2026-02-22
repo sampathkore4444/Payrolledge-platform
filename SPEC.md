@@ -6,8 +6,9 @@
 **Project Type:** HR Management & Payroll Processing Web Application  
 **Target Users:** Factory owners, HR managers, department heads, and employees in industrial areas (Jeedimetla, Shapoor Nagar)  
 **Tech Stack:**  
-- Frontend: React.js  
+- Frontend: React.js + TypeScript + Tailwind CSS + Vite
 - Backend: Python FastAPI
+- Database: SQLite (self-hosted)
 
 ---
 
@@ -17,22 +18,28 @@
 - Employee profiles with personal details, role, department, contact info
 - Document management: ID proofs, contracts, certificates
 - Job history and role changes tracking
+- Employee code generation (EMPYYYYNNNN format)
 
 ### 2.2 Payroll Processing
 - Salary calculation: Basic + allowances + deductions
 - Statutory compliance: PF, ESI, Professional Tax, TDS
-- Automated payslip generation and distribution (PDF/email)
+- Automated payslip generation (PDF)
 - Salary revisions, bonuses, and arrears handling
+- Journal entries export for Tally/QuickBooks integration
+- Payment entries export
 
 ### 2.3 Attendance & Leave Management
-- Integration with biometric devices or manual attendance
-- Leave tracking: Casual, sick, paid leaves
-- Overtime calculation
+- Manual attendance tracking
+- Leave tracking: Casual, sick, earned, unpaid leaves
+- Leave balance management
+- Leave request workflow (apply → approve/reject)
+- Leave request notifications
+- Holiday calendar management
 
 ### 2.4 Employee Onboarding
 - Digital onboarding forms
-- Automatic document verification workflow
-- Induction checklist for new hires
+- Document upload and verification
+- Employee self-registration
 
 ---
 
@@ -41,53 +48,60 @@
 ### 3.1 Reports & Analytics
 - Monthly payroll summaries
 - Compliance reports for PF, ESI, PT
-- Workforce analytics: Employee count, attrition, attendance patterns
+- Attendance reports
+- Payroll register
+- PF/ESI reports
+- Journal entries export (CSV)
+- Audit logs
 
 ### 3.2 Tax Management
 - Automated TDS calculation
-- Form 16 and Form 26AS integration for income tax compliance
+- Form 16 generation
 
-### 3.3 Self-Service Portal for Employees
-- Download payslips and tax forms
-- Apply for leave and track approval
-- Update personal details
+### 3.3 Employee Self-Service Portal (NEW)
+- Employee login with employee code + password
+- View profile information
+- View and download payslips (PDF)
+- Apply for leave requests
+- Track leave request status
 
 ### 3.4 Role-Based Access Control
-- Admin, HR, department heads, and employees have specific permissions
+- Admin, HR, Department Head, Employee roles
+- Permission-based route protection
+
+### 3.5 Integration API (NEW)
+- Public endpoint to lookup employee by code
+- Attendance sync endpoint for biometric devices
+- Health check endpoint
+
+### 3.6 Audit Logging (NEW)
+- Track create/update/delete actions
+- Record old and new values
+- User attribution for all changes
 
 ---
 
-## 4. Optional / Premium Features
+## 4. Technical Features
 
-### 4.1 Integration with Accounting Software
-- Tally, QuickBooks, Zoho Books integration
+### 4.1 Security
+- JWT-based authentication
+- Password hashing with bcrypt
+- Role-based access control
+- Audit logs for compliance
 
-### 4.2 Shift & Roster Management
-- Multiple shifts support for factories
+### 4.2 Database
+- SQLite for self-hosted deployment
+- SQLAlchemy ORM
+- Pydantic for data validation
 
-### 4.3 Mobile App
-- Employees can check salaries, attendance, leave
-
-### 4.4 Compliance Alerts
-- PF/ESI deadlines, labor law updates
-
-### 4.5 Bulk SMS/Email Notifications
-- Salary release, attendance alerts, policy updates
-
----
-
-## 5. Technical Features
-
-### 5.1 Security
-- Data security & role-based encryption
-- Backup and audit logs for compliance purposes
-
-### 5.2 Multi-language Support
-- Telugu, English, Hindi for local employees
+### 4.3 API
+- RESTful API design
+- OpenAPI/Swagger documentation
+- CORS enabled
 
 ---
 
-## 6. User Roles
+## 5. User Roles
 
 | Role | Description |
 |------|-------------|
@@ -98,44 +112,98 @@
 
 ---
 
-## 7. Database Entities (Preliminary)
+## 6. Database Entities
 
-- Users
-- Employees
-- Departments
-- Roles/Positions
-- Attendance
-- Leave Requests
-- Payroll Records
-- Salary Components
-- Statutory Deductions
-- Documents
-
----
-
-## 8. API Modules (Backend)
-
-- `/api/auth` - Authentication & Authorization
-- `/api/employees` - Employee CRUD
-- `/api/attendance` - Attendance tracking
-- `/api/leave` - Leave management
-- `/api/payroll` - Payroll processing
-- `/api/reports` - Reports & Analytics
-- `/api/documents` - Document management
-- `/api/settings` - System settings
+- **Users** - System users with roles
+- **Employees** - Employee profiles with personal details
+- **Departments** - Organizational departments
+- **Designations** - Job titles/positions
+- **Attendance** - Daily attendance records
+- **Leave Requests** - Leave applications
+- **Leave Balances** - Employee leave entitlements
+- **Payroll Records** - Monthly payroll entries
+- **Payroll Settings** - Salary components and deductions
+- **Documents** - Employee documents
+- **Holidays** - Company holiday calendar
+- **Audit Logs** - System activity tracking
 
 ---
 
-## 9. Frontend Pages (Preliminary)
+## 7. API Modules (Backend)
 
-- Login/Register
-- Dashboard
-- Employee List
-- Employee Profile
-- Attendance Management
-- Leave Management
-- Payroll Processing
-- Payslip View
-- Reports
-- Settings
-- Employee Self-Service Portal
+| Endpoint | Description |
+|----------|-------------|
+| `/api/auth` | Authentication, login, register, employee login |
+| `/api/employees` | Employee CRUD operations |
+| `/api/departments` | Department management |
+| `/api/designations` | Designation management |
+| `/api/attendance` | Attendance tracking |
+| `/api/leave` | Leave requests and balances |
+| `/api/payroll` | Payroll processing and records |
+| `/api/reports` | Payslips, journal entries, compliance reports |
+| `/api/documents` | Document management |
+| `/api/holidays` | Holiday calendar |
+| `/api/audit-logs` | System audit trail |
+| `/api/integration` | External system integration endpoints |
+
+---
+
+## 8. Frontend Pages
+
+| Page | Description |
+|------|-------------|
+| `/login` | Admin/HR login |
+| `/employee-portal` | Employee self-service portal |
+| `/` | Dashboard |
+| `/employees` | Employee list with search |
+| `/employees/:id` | Employee detail/profile |
+| `/attendance` | Attendance management |
+| `/leave` | Leave request management |
+| `/payroll` | Payroll records list |
+| `/payroll/process` | Payroll processing wizard |
+| `/departments` | Department management |
+| `/holidays` | Holiday calendar |
+| `/documents` | Document management |
+| `/reports` | Reports and exports |
+| `/audit-logs` | System audit trail |
+| `/settings` | System settings |
+
+---
+
+## 9. Employee Portal Features
+
+- **Login:** Employee code + password
+- **Profile:** View personal details, department, designation
+- **Payslips:** View monthly salary details, download PDF
+- **Leave:** Apply for leave, track status
+
+---
+
+## 10. Payroll Features
+
+- **Salary Components:**
+  - Basic salary
+  - HRA (House Rent Allowance)
+  - Conveyance allowance
+  - Special allowance
+  - Overtime
+
+- **Deductions:**
+  - PF (Provident Fund)
+  - ESI (Employee State Insurance)
+  - Professional Tax
+  - TDS (Tax Deducted at Source)
+
+- **Exports:**
+  - Journal entries (CSV)
+  - Payment entries (CSV)
+  - Payslips (PDF)
+
+---
+
+## 11. Deployment
+
+- **Backend:** Python FastAPI on port 8000
+- **Frontend:** React + Vite on port 5173 (development)
+- **Database:** SQLite (payrolledge.db)
+- **Architecture:** Monolithic (single port for backend)
